@@ -58,7 +58,8 @@ class _BottomNaviState extends State<BottomNavi> {
             label: 'Contact',
           ),
         ],
-        currentIndex: _currentIndex,
+        currentIndex: _selectedIndex,
+        //currentIndex: _currentIndex,
         selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped
     );

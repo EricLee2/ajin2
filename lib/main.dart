@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        "/" : (context) => MyStatefulWidget(title: "Ajin's Didary"),
+        "/" : (context) => MyStatefulWidget(title: "Ajin's Diary"),
         "/schedule" : (context) => MySchedule(title: "My Schedule"),
         "/contact" : (context) => MyContact(title: "My Contact"),
       },
