@@ -19,7 +19,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         elevation: 1,
       ),
       body: Center(
-        child: Text('Main Page'), //_widgetOptions.elementAt(_selectedIndex),
+        child: Text('Main Pageaaaa'), //_widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavi(),
     );

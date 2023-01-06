@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:core';
 
 class BottomNavi extends StatefulWidget {
   const BottomNavi({Key? key}) : super(key: key);
@@ -21,24 +22,26 @@ class _BottomNaviState extends State<BottomNavi> {
     } else if (Uri.base.toString().contains('')){
       _selectedIndex = 0;
     }
-    _currentIndex = _selectedIndex;
+   _currentIndex = _selectedIndex;
+    //print(Uri.base);
     super.initState();
-  //  print('app');
-  }
+   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
+    //print(_selectedIndex);
+
     String routeName='';
     if (index == 0){routeName ='/';}
     else if (index == 1){routeName ='/schedule';}
     else if (index == 2){routeName ='/contact';}
 
-    if (_currentIndex != _selectedIndex) {
+  //  if (_currentIndex != _selectedIndex) {
       Navigator.pushReplacementNamed(context, '$routeName');
-    }
+  //  }
   }
 
   @override

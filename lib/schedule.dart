@@ -18,6 +18,7 @@ class _MyScheduleState extends State<MySchedule> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+//        backgroundColor: Colors.transparent,
         elevation: 1,
       ),
       body: TableCalendar(
@@ -34,7 +35,7 @@ class _MyScheduleState extends State<MySchedule> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule(title: 'Add schedule', mode: 'add mode')));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule(title: 'Add schedule', mode: 'add')));
               },
               label: Text('Add'),
               icon: Icon(Icons.add),
