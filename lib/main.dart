@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
         "/schedule" : (context) => MySchedule(title: "My Schedule"),
         "/contact" : (context) => MyContact(title: "My Contact"),
       },
-      title: '_title',
-      //title: _title,
+      title: _title,
     );
   }
 }
+
 

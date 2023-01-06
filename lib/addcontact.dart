@@ -1,22 +1,81 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddContact extends StatefulWidget {
-  const AddContact({Key? key, required this.title, this.mode}) : super(key: key);
+  const AddContact({Key? key, required this.title, this.mode, this.contactId}) : super(key: key);
   final String title ;
   final String? mode;
+  final int? contactId;
 
   @override
   State<AddContact> createState() => _AddContactState();
 }
 
 class _AddContactState extends State<AddContact> {
+  int? _contactId;
   String? _mode;
+
+  late TextEditingController nameController;
+  late TextEditingController mobileController;
+  late TextEditingController emailController;
+  FocusNode? nameFocusNode;
+  FocusNode? mobileFocusNode;
+  FocusNode? emailFocusNode;
 
   @override
   void initState() {
     // TODO: implement initState
-    _mode = widget.mode!;
+    _mode = widget.mode;
+    if (_mode == 'update') {
+      _contactId = widget.contactId;
+    } else {
+      _contactId = 0;
+    }
+
+    nameController = TextEditingController();
+    mobileController = TextEditingController();
+    emailController = TextEditingController();
+    nameFocusNode = FocusNode();
+    mobileFocusNode = FocusNode();
+    emailFocusNode = FocusNode();
+
     super.initState();
+  }
+
+  void _showDialog(BuildContext context, String title, String message){
+    showDialog(
+        context: context,
+        barrierDismissible: false, // 바깥 영역 터치시 닫을지 여부, false : 버튼만, true : 바깥 영역도
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)
+            ),
+            title: Text(title),
+            content: SizedBox(
+              width: 300,
+              child: SingleChildScrollView(
+                child: Text(message),
+              ),
+            ),
+            insetPadding: const  EdgeInsets.fromLTRB(0,0,0,0),
+            actions: [
+              Center(
+                child: TextButton(
+                  child: const Text('확인'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ],
+          );
+        }
+    );
   }
 
   @override
@@ -26,164 +85,243 @@ class _AddContactState extends State<AddContact> {
         title: Text(widget.title),
         elevation: 1,
       ),
-      body: MainPage(), //_widgetOptions.elementAt(_selectedIndex),
-    );
-  }
-}
-
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _name = '';
-  String _mobile = '';
-  String _email = '';
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Form(
-        key: _formKey,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-
-          children: <Widget>[
-            TextFormField(
-              keyboardType: TextInputType.name,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.person),
-                hintText: '이름입력',
-                labelText: 'Name',
-              ),
-              onSaved: (value) {
-                setState(() {
-                  _name = value as String;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '이름을 입력해 주세요.';
-                }
-                if (value.toString().length < 2) {
-                  return '2자 이상 입력';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.phone),
-                hintText: "'-'없이 숫자만 입력",
-                labelText: 'Mobile',
-              ),
-              onSaved: (value) {
-                setState(() {
-                  _mobile = value as String;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '연락처를 입력해 주세요.';
-                }
-                if (!RegExp('[0-9]').hasMatch(value)) {
-                  return '숫자만 입력해 주세요.';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              //obscureText: true,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.local_post_office),
-/*                prefixIcon: Icon(Icons.phone),
-                suffixIcon: Icon(Icons.star),*/
-                hintText: '이메일 입력',
-                labelText: 'Email',
-              ),
-              onSaved: (value) {
-                setState(() {
-                  _email = value as String;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return '이메일을 입력해 주세요.';
-                }
-                String pattern =
-                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                RegExp regExp = new RegExp(pattern);
-
-                if (!regExp.hasMatch(value)) {
-                  return '이메일을 올바르게 주세요.';
-                }
-                return null;
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    child: Text('취소'),
-                    onPressed: () {
-                      Navigator.pop(context);
+          children: [
+            Center(
+              child: FutureBuilder<List<Contact>>(
+                future: DatabaseHelper.instance.getContact(_contactId),
+                builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
+                  if (snapshot.data!.isEmpty) {
+                    return Center(
+                        child: Column(
+                          children: [
+                            nameInput(),
+                            mobileInput(),
+                            emailInput(),
+                          ],
+                        )
+                      );
                     }
-                  ),
-                  SizedBox(width: 10,),
-                  ElevatedButton(
-                    child: Text('저장'),
-                    onPressed: () {
-                      //await _historyback(context);
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('정상적으로 입력되었습니다.'),
-                              duration: Duration(seconds: 10),
-                              action: SnackBarAction(
-                                label: '확인', //버튼이름
-                                onPressed: (){
-                                  _historyback(context);
-                                },
-                              ),
-                            )
+                  else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: snapshot.data!.map((contact) {
+                        if (snapshot.hasData) {
+                          nameController = TextEditingController(text:contact.name);
+                          mobileController = TextEditingController(text:contact.mobile);
+                          emailController = TextEditingController(text:contact.email);
+                        }
+                        return Center(child:
+                          Column(
+                            children: [
+                              nameInput(),
+                              mobileInput(),
+                              emailInput(),
+                            ],
+                          )
                         );
-                      }
-                    },
-                  ),
-                ],
+                      }).toList(),
+                  );
+                },
               ),
             ),
+            Center(
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.0),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            child: const Text('취소'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }
+                        ),
+                        const SizedBox(width: 10,),
+                        ElevatedButton(
+                          child: const Text('저장'),
+                          onPressed: () {
+                            String pattern =
+                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                            RegExp regExp = RegExp(pattern);
+                            if(nameController.value.text.isEmpty){
+                              _showDialog(context, 'Contact','Name required. \nPlease enter Name.');}
+                            else if(mobileController.value.text.isEmpty){
+                              _showDialog(context, 'Contact','Mobile required. \nPlease enter Mobile.');}
+                            else if(!RegExp(r"^[0-9]*$").hasMatch(mobileController.value.text)){
+                              _showDialog(context, 'Contact','Wrong Mobile. \nPlease check Mobile.');}
+                            else if(emailController.value.text.isEmpty){
+                              _showDialog(context, 'Contact','Email required. \nPlease enter Email.');}
+                            else if(!regExp.hasMatch(emailController.value.text)){
+                              _showDialog(context, 'Contact','Wrong Email. \nPlease check Email.');}
+                            else {
+                              if (_mode == 'add'){
+                                DatabaseHelper.instance.add(Contact(
+                                    name: nameController.text,
+                                    mobile: mobileController.text,
+                                    email: emailController.text),);
+                              } else {
+                                DatabaseHelper.instance.update(Contact(
+                                    id: _contactId,
+                                    name: nameController.text,
+                                    mobile: mobileController.text,
+                                    email: emailController.text),);
+                              }
+                              setState(() {
+                                nameController.clear();
+                                mobileController.clear();
+                                emailController.clear();
+                                _contactId = null;
+                                _returnUrl(context);});
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     );
   }
-} abcd
 
-_historyback(BuildContext context){
-  Navigator.pop(context);
+  Widget nameInput() {
+    return TextField(
+      controller: nameController,
+      focusNode: nameFocusNode,
+      keyboardType: TextInputType.name,
+      decoration: const InputDecoration(
+        icon: Icon(Icons.person),
+        hintText: '이름입력',
+        labelText: 'Name',
+      ),
+    );
+  }
+
+  Widget mobileInput() {
+    return TextField(
+      controller: mobileController,
+      focusNode: mobileFocusNode,
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        icon: Icon(Icons.phone),
+        hintText: "'-'없이 숫자만 입력",
+        labelText: 'Mobile',
+      ),
+    );
+  }
+
+  Widget emailInput() {
+    return TextField(
+      controller: emailController,
+      focusNode: emailFocusNode,
+      keyboardType: TextInputType.emailAddress,
+      //obscureText: true,
+      decoration: const InputDecoration(
+        icon: Icon(Icons.local_post_office),
+        hintText: '이메일 입력',
+        labelText: 'Email',
+      ),
+    );
+  }
 }
 
-/*    ScaffoldMessenger.of(context).showSnackBar(
-    //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
-    SnackBar(
-    content: Text('Like a new Snack bar!'), //snack bar의 내용. icon, button같은것도 가능하다.
-    duration: Duration(seconds: 5), //올라와있는 시간
-    action: SnackBarAction( //추가로 작업을 넣기. 버튼넣기라 생각하면 편하다.
-    label: 'Undo', //버튼이름
-    onPressed: (){}, //버튼 눌렀을때.
-    ),
+_returnUrl(BuildContext context) {
+  Navigator.pushNamedAndRemoveUntil(context, '/contact', (route) => false);
+}
+
+class Contact {
+  final int? id;
+  final String name;
+  final String mobile;
+  final String email;
+
+  Contact({this.id, required this.name, required this.mobile, required this.email});
+
+  factory Contact.fromMap(Map<String, dynamic> json) => Contact(
+      id: json['id'],
+      name: json['name'],
+      mobile: json['mobile'],
+      email: json['email'],
+  );
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'mobile': mobile,
+      'email': email,
+    };
+  }
+}
+
+class DatabaseHelper {
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  static Database? _database;
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'contacts.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+    CREATE TABLE contacts(
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      mobile TEXT,
+      email TEXT
     )
-    );*/
+    ''');
+  }
+
+  Future<int> add(Contact contact) async {
+    Database db = await instance.database;
+    return await db.insert('contacts', contact.toMap());
+  }
+
+  Future<List<Contact>> getContacts() async {
+    Database db = await instance.database;
+    var contact = await db.query('contacts', orderBy: 'id');
+    List<Contact> contactList = contact.isNotEmpty
+        ? contact.map((c) => Contact.fromMap(c)).toList()
+        : [];
+    return contactList;
+  }
+
+  Future<List<Contact>> getContact(contactId) async {
+    Database db = await instance.database;
+    var contact = await db.query('contacts', where: 'id = ?', whereArgs: [contactId]);
+    List<Contact> contactList = contact.isNotEmpty
+        ? contact.map((c) => Contact.fromMap(c)).toList()
+        : [];
+    return contactList;
+  }
+
+  Future<int> update(Contact contact) async {
+    Database db = await instance.database;
+    return await db.update('contacts', contact.toMap(),
+        where: 'id = ?', whereArgs: [contact.id]);
+  }
+
+  Future<int> remove(int id) async {
+    Database db = await instance.database;
+    return await db.delete('contacts', where: 'id = ?', whereArgs: [id]);
+  }
+}
