@@ -94,16 +94,14 @@ class _AddContactState extends State<AddContact> {
                 future: DatabaseHelper.instance.getContact(_contactId),
                 builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
                   if (snapshot.data!.isEmpty) {
-                    return Center(
-                        child: Column(
-                          children: [
-                            nameInput(),
-                            mobileInput(),
-                            emailInput(),
-                          ],
-                        )
-                      );
-                    }
+                    return Column(
+                      children: [
+                        nameInput(),
+                        mobileInput(),
+                        emailInput(),
+                      ],
+                    );
+                  }
                   else if (snapshot.hasError) {
                     return Text('${snapshot.error}');
                   }
@@ -318,10 +316,5 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.update('contacts', contact.toMap(),
         where: 'id = ?', whereArgs: [contact.id]);
-  }
-
-  Future<int> remove(int id) async {
-    Database db = await instance.database;
-    return await db.delete('contacts', where: 'id = ?', whereArgs: [id]);
   }
 }

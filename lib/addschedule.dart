@@ -19,13 +19,14 @@ class AddSchedule extends StatefulWidget {
 class _AddScheduleState extends State<AddSchedule> {
   int? _scheduleId;
   String? _mode;
+  DateTime? _selectedDate;
+
   late TextEditingController nameController;
   late TextEditingController dateController;
   late TextEditingController memoController;
   FocusNode? nameFocusNode;
   FocusNode? dateFocusNode;
   FocusNode? memoFocusNode;
-  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -109,7 +110,7 @@ class _AddScheduleState extends State<AddSchedule> {
       color: Colors.white,
       child: Column(
         children: [
-          Container(
+          SizedBox(
             height: 55,
             child: Row(
               children: [
@@ -138,14 +139,12 @@ class _AddScheduleState extends State<AddSchedule> {
                 future: DatabaseHelper.instance.getSchedule(_scheduleId),
                 builder: (BuildContext context, AsyncSnapshot<List<Schedule>> snapshot) {
                   if (snapshot.data!.isEmpty) {
-                    return Center(
-                        child: Column(
-                          children: [
-                            nameInput(),
-                            dateInput(context),
-                            memoInput(),
-                          ],
-                        )
+                    return Column(
+                      children: [
+                        nameInput(),
+                        dateInput(context),
+                        memoInput(),
+                      ],
                     );
                   }
                   else if (snapshot.hasError) {
@@ -192,19 +191,12 @@ class _AddScheduleState extends State<AddSchedule> {
                   ElevatedButton(
                     child: const Text('저장'),
                     onPressed: () {
-                      String pattern =
-                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                      RegExp regExp = RegExp(pattern);
                       if(nameController.text.isEmpty){
                         _showDialog(context, 'Schedule','Name required. \nPlease enter Name.');}
                       else if(dateController.text.isEmpty){
                         _showDialog(context, 'Schedule','Date required. \nPlease enter Date.');}
-                      else if(!RegExp(r"^[0-9]*$").hasMatch(dateController.text)){
-                        _showDialog(context, 'Schedule','Wrong Date. \nPlease check Date.');}
                       else if(memoController.text.isEmpty){
-                        _showDialog(context, 'Schedule','Email required. \nPlease enter Email.');}
-                      else if(!regExp.hasMatch(memoController.text)){
-                        _showDialog(context, 'Schedule','Wrong Email. \nPlease check Email.');}
+                        _showDialog(context, 'Schedule','Memo required. \nPlease enter memo.');}
                       else {
                         if (_mode == 'add'){
                           DatabaseHelper.instance.add(Schedule(
@@ -253,7 +245,7 @@ class _AddScheduleState extends State<AddSchedule> {
   Widget dateInput(BuildContext context) {
     return TextField(
       controller: dateController,
-      focusNode: dateFocusNode,
+      //focusNode: dateFocusNode,
       keyboardType: TextInputType.datetime,
       readOnly: true,
       decoration: const InputDecoration(
@@ -367,10 +359,5 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.update('schedules', schedule.toMap(),
         where: 'id = ?', whereArgs: [schedule.id]);
-  }
-
-  Future<int> remove(int id) async {
-    Database db = await instance.database;
-    return await db.delete('schedules', where: 'id = ?', whereArgs: [id]);
   }
 }
