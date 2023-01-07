@@ -45,8 +45,70 @@ class _MyScheduleState extends State<MySchedule> {
               );
             }
             return snapshot.data!.isEmpty
-                ? Center(child: Text('No Groceries in List'))
-                : Container(child: Text(snapshot.data!.toList().toString()),);
+                ? const Center(child: Text('No Schedule in List'))
+                : GridView.builder(
+                    itemCount: snapshot.data!.length, //item 개수
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
+                      childAspectRatio: 1 / 1.5, //item 의 가로 1, 세로 2 의 비율
+                      mainAxisSpacing: 10, //수평 Padding
+                      crossAxisSpacing: 10, //수직 Padding
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        alignment: Alignment.topLeft,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        padding: const EdgeInsets.only(left: 5,right: 5),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 30,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                      child: Text(snapshot.data![index].name),
+                                    flex:5, ),
+                                  Expanded(
+                                      child: IconButton(
+                                        icon: Icon(Icons.delete, size: 15,),
+                                        color: Colors.black,
+                                        onPressed: (){
+                                          setState(() {
+                                            int? _index = snapshot.data![index].id ;
+                                            DatabaseHelper.instance.remove(_index!);
+                                          });
+                                        },
+                                      )
+                                  )
+                                ],
+                              )
+                            ),
+                            const Divider(color: Colors.black, height: 1,),
+                            Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              alignment: Alignment.topLeft,
+                              child: Text('['+snapshot.data![index].date+']')),
+                            Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              alignment: Alignment.topLeft,
+                              child: GestureDetector(
+                                  onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule(title: 'Update Contact', mode: 'update', scheduleId: snapshot.data![index].id)));
+                                  },
+                                  child: Text(snapshot.data![index].memo),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                );
             },
         ),
       ),
@@ -127,8 +189,6 @@ class DatabaseHelper {
     List<Schedule> scheduleList = schedule.isNotEmpty
         ? schedule.map((c) => Schedule.fromMap(c)).toList()
         : [];
-    print(schedule);
-    print(schedule.map((c) => Schedule.fromMap(c)).toList());
     return scheduleList;
   }
 
@@ -137,52 +197,3 @@ class DatabaseHelper {
     return await db.delete('schedules', where: 'id = ?', whereArgs: [id]);
   }
 }
-
-/*
-GridView.builder(
-itemCount: snapshot.data!.length, //item 개수
-gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-childAspectRatio: 1 / 3, //item 의 가로 1, 세로 2 의 비율
-mainAxisSpacing: 5, //수평 Padding
-crossAxisSpacing: 10, //수직 Padding
-),
-itemBuilder: (BuildContext context, int index) {
-return Column(
-children: snapshot.data!.map((schedule) {
-return Column(
-children: [
-Container(
-alignment: Alignment.topLeft,
-color: Colors.green,
-child: Row(
-children: [
-Text(schedule.id.toString()),
-Expanded(child: Align(
-alignment: Alignment.topRight,
-child: IconButton(
-icon: const Icon(Icons.delete),
-color: Colors.black,
-onPressed: (){
-setState(() {
-DatabaseHelper.instance.remove(schedule.id!);
-});
-},
-),
-))
-],
-)),
-Container(
-alignment: Alignment.topLeft,
-color: Colors.yellow,
-child: Text(snapshot.data!.length.toString())),
-Container(
-alignment: Alignment.topLeft,
-color: Colors.pink,
-child: Text(schedule.memo)),
-],
-);
-}).toList(),
-);
-},
-);*/
