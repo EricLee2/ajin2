@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:ajin2/contact.dart';
 import 'package:ajin2/schedule.dart';
 import 'package:ajin2/mainpage.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  await initializeDateFormatting();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
