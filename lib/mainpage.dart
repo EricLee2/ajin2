@@ -253,8 +253,8 @@ class DatabaseHelper {
 
   Future<List<Schedule>> getSchedules() async {
     Database db = await instance.database;
-    /*var schedule = await db.query('schedules', groupBy: 'date');*/
-    var schedule = await db.rawQuery('select date, group_concat(id) as ids from schedules group by date');
+    var schedule = await db.query('schedules', groupBy: 'date');
+    /*var schedule = await db.rawQuery('select date, group_concat(id) as ids from schedules group by date');*/
 //    var schedule = await db.execute("select date, LISTAGG(name,',') WITHIN GROUP(ORDER BY date) AS name FORM schedules GROUB BY date");
     List<Schedule> scheduleList = schedule.isNotEmpty
         ? schedule.map((c) => Schedule.fromMap(c)).toList()
