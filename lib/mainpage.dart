@@ -184,7 +184,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add')));
               },
-              label: Text('Add'),
+              label: Text('일정등록'),
               icon: Icon(Icons.add),
             ),
           ),

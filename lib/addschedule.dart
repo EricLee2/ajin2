@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class AddSchedule extends StatefulWidget {
   const AddSchedule({Key? key, required this.title, this.mode, this.scheduleId}) : super(key: key);
@@ -19,14 +20,14 @@ class AddSchedule extends StatefulWidget {
 class _AddScheduleState extends State<AddSchedule> {
   int? _scheduleId;
   String? _mode;
-  DateTime? _selectedDate;
+  String? _selectedDate;
 
-  late TextEditingController nameController;
-  late TextEditingController dateController;
-  late TextEditingController memoController;
-  FocusNode? nameFocusNode;
-  FocusNode? dateFocusNode;
-  FocusNode? memoFocusNode;
+  FocusNode nameFocusNode = FocusNode();
+  FocusNode dateFocusNode = FocusNode();
+  FocusNode memoFocusNode = FocusNode();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController memoController = TextEditingController();
 
   @override
   void initState() {
@@ -40,12 +41,7 @@ class _AddScheduleState extends State<AddSchedule> {
       _scheduleId = 0;
     }
 
-    nameController = TextEditingController();
-    dateController = TextEditingController();
-    memoController = TextEditingController();
-    nameFocusNode = FocusNode();
-    dateFocusNode = FocusNode();
-    memoFocusNode = FocusNode();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void _showDialog(BuildContext context, String title, String message){
@@ -99,7 +95,7 @@ class _AddScheduleState extends State<AddSchedule> {
 
     setState(() {
       dateName!.text = DateFormat('yyyy-MM-dd').format(pickedDate);
-      _selectedDate = pickedDate;
+      _selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
     });
   }
 
@@ -110,8 +106,9 @@ class _AddScheduleState extends State<AddSchedule> {
       color: Colors.white,
       child: Column(
         children: [
-          SizedBox(
-            height: 55,
+          Container(
+            height: 60,
+            color: Colors.lightGreen,
             child: Row(
               children: [
                 const SizedBox(width: 20,),
@@ -156,6 +153,9 @@ class _AddScheduleState extends State<AddSchedule> {
                       if (snapshot.hasData) {
                         nameController = TextEditingController(text:contact.name);
                         dateController = TextEditingController(text:contact.date);
+                        if (_selectedDate !=null && _selectedDate !=contact.date){
+                          dateController = TextEditingController(text:_selectedDate);
+                        }
                         memoController = TextEditingController(text:contact.memo);
                       }
                       return Center(
