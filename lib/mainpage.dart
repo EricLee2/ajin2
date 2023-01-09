@@ -182,7 +182,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             child: FloatingActionButton.extended(
               onPressed: (){
               },
-              label: Text('Add'),
+              label: Text('일정등록'),
               icon: Icon(Icons.add),
             ),
           ),

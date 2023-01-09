@@ -185,7 +185,7 @@ class DatabaseHelper {
 
   Future<List<Schedule>> getSchedules() async {
     Database db = await instance.database;
-    var schedule = await db.query('schedules', orderBy: 'id');
+    var schedule = await db.query('schedules', orderBy: 'date desc');
     List<Schedule> scheduleList = schedule.isNotEmpty
         ? schedule.map((c) => Schedule.fromMap(c)).toList()
         : [];
