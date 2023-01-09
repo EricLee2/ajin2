@@ -8,7 +8,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ajin2/addschedule.dart';
-import 'package:ajin2/addS.dart';
 
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key, required this.title}) : super(key: key);
@@ -140,28 +139,28 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                               color: Colors.black45,
                           ),
                         ),
-                        calendarStyle: CalendarStyle(
+                        calendarStyle: const CalendarStyle(
                           isTodayHighlighted : true, // today 표시 여부
                           // today 글자 조정
-                          todayTextStyle : const TextStyle(
+                          todayTextStyle : TextStyle(
                               color: Color(0xFFFAFAFA),
                               fontSize: 16.0,
                           ),
                           // today 모양 조정
-                          todayDecoration : const BoxDecoration(
+                          todayDecoration : BoxDecoration(
                               //color: const Color(0xFF9FA8DA),
                               color: Colors.grey,
                               shape: BoxShape.circle,
                           ),
-                          weekendTextStyle : const TextStyle(color: Colors.red),// weekend 글자 조정
+                          weekendTextStyle : TextStyle(color: Colors.red),// weekend 글자 조정
                           //weekendDecoration : const BoxDecoration(shape: BoxShape.circle),// weekend 모양 조정
                           // selectedDay 글자 조정
-                          selectedTextStyle : const TextStyle(
+                          selectedTextStyle : TextStyle(
                               color: Color(0xFFFAFAFA),
                               fontSize: 16.0,
                           ),
                           // selectedDay 모양 조정
-                          selectedDecoration : const BoxDecoration(
+                          selectedDecoration : BoxDecoration(
                               //color: const Color(0xFF5C6BC0),
                               color: Colors.pink,
                               shape: BoxShape.circle,
@@ -182,7 +181,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add')));
               },
               label: Text('Add'),
               icon: Icon(Icons.add),
@@ -255,7 +253,8 @@ class DatabaseHelper {
 
   Future<List<Schedule>> getSchedules() async {
     Database db = await instance.database;
-    var schedule = await db.query('schedules', groupBy: 'date');
+    /*var schedule = await db.query('schedules', groupBy: 'date');*/
+    var schedule = await db.rawQuery('select date, group_concat(id) as ids from schedules group by date');
 //    var schedule = await db.execute("select date, LISTAGG(name,',') WITHIN GROUP(ORDER BY date) AS name FORM schedules GROUB BY date");
     List<Schedule> scheduleList = schedule.isNotEmpty
         ? schedule.map((c) => Schedule.fromMap(c)).toList()
