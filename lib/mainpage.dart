@@ -29,14 +29,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   DateTime focusedDay = DateTime.now();
 
   Map<DateTime, List<Event>> events = {
-    DateTime.utc(2023, 1, 4): [Event('title4'), Event('title5')],
-    DateTime.utc(2023, 1, 6): [Event('title'), Event('title2')],
-    /*DateTime.utc(2023, 1, 14): [Event('title3')],*/
+    DateTime.utc(2023, 1, 4): [Event('title3')],
   };
 
   List<Event> _getEventsForDay(DateTime day) {
     bool? y = events[day]?.isEmpty;
-    print(events);
     if ( y != null ) {
       int x = 1;
     }
@@ -51,9 +48,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 
   changeScheduleToEvents(AsyncSnapshot<List<Schedule>> snapshot) {
-    if (!snapshot.hasData) {
+/*    if (!snapshot.hasData) {
       return;
-    } else {
+    } else {*/
       /*
         snapshot.data 배열의 data값을 대상으로 events가 키를 가지고 있는지 확인
       */
@@ -65,7 +62,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
         events.addAll(oneEvent);
       });
-    }
+      print(events);
+ //   }
   }
 
   @override
@@ -105,7 +103,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               future: DatabaseHelper.instance.getSchedules(),
               builder:(BuildContext context, AsyncSnapshot<List<Schedule>> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: SizedBox(
                       child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation(Colors.blue),
@@ -115,7 +113,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       width: 50.0
                     ),
                   );
-                }
+                } else {changeScheduleToEvents(snapshot);}
                 return snapshot.data!.isEmpty
                     ? const Center(child: Text('No Schedule in List'))
                     : GestureDetector(
@@ -160,25 +158,25 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           calendarStyle: const CalendarStyle(
                             isTodayHighlighted : true, // today 표시 여부
                             // today 글자 조정
-                            todayTextStyle : const TextStyle(
+                            todayTextStyle : TextStyle(
                                 color: Color(0xFFFAFAFA),
                                 fontSize: 16.0,
                             ),
                             // today 모양 조정
-                            todayDecoration : const BoxDecoration(
+                            todayDecoration : BoxDecoration(
                                 //color: const Color(0xFF9FA8DA),
                                 color: Colors.grey,
                                 shape: BoxShape.circle,
                             ),
-                            weekendTextStyle : const TextStyle(color: Colors.red),// weekend 글자 조정
+                            weekendTextStyle : TextStyle(color: Colors.red),// weekend 글자 조정
                             //weekendDecoration : const BoxDecoration(shape: BoxShape.circle),// weekend 모양 조정
                             // selectedDay 글자 조정
-                            selectedTextStyle : const TextStyle(
+                            selectedTextStyle : TextStyle(
                                 color: Color(0xFFFAFAFA),
                                 fontSize: 16.0,
                             ),
                             // selectedDay 모양 조정
-                            selectedDecoration : const BoxDecoration(
+                            selectedDecoration : BoxDecoration(
                                 //color: const Color(0xFF5C6BC0),
                                 color: Colors.pink,
                                 shape: BoxShape.circle,
