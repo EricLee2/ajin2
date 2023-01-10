@@ -29,19 +29,43 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   DateTime focusedDay = DateTime.now();
 
   Map<DateTime, List<Event>> events = {
-    DateTime.utc(2023,1,6) : [ Event('title'), Event('title2') ],
-    DateTime.utc(2023,1,14) : [ Event('title3') ],
+    DateTime.utc(2023, 1, 4): [Event('title4'), Event('title5')],
+    DateTime.utc(2023, 1, 6): [Event('title'), Event('title2')],
+    /*DateTime.utc(2023, 1, 14): [Event('title3')],*/
   };
 
   List<Event> _getEventsForDay(DateTime day) {
+    bool? y = events[day]?.isEmpty;
+    print(events);
+    if ( y != null ) {
+      int x = 1;
+    }
     return events[day] ?? [];
   }
 
-  String getToday(){
+  String getToday() {
     DateTime now = DateTime.now();
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     strToday = formatter.format(now);
     return strToday;
+  }
+
+  changeScheduleToEvents(AsyncSnapshot<List<Schedule>> snapshot) {
+    if (!snapshot.hasData) {
+      return;
+    } else {
+      /*
+        snapshot.data 배열의 data값을 대상으로 events가 키를 가지고 있는지 확인
+      */
+      List<Schedule>? messages = snapshot.data;
+      messages?.forEach((el) {
+        String fromDate = el.date;
+        DateTime dt = DateTime.parse(fromDate).toUtc();
+
+        Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
+        events.addAll(oneEvent);
+      });
+    }
   }
 
   @override
@@ -59,8 +83,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               width: double.infinity,
               height: 100,
               child: Align(
-                child: Text(getToday()+'\n Welcome to Diary of Ajin.',
-                  style: TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),),
+                child: Text(
+                  getToday()+'\n Welcome to Diary of Ajin.',
+                  style: const TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),),
                 alignment: Alignment.center,
               ),
               decoration : BoxDecoration(
@@ -68,7 +93,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 //border : Border.all(color : Colors.grey),
                 image: DecorationImage(
                   colorFilter: ColorFilter.mode(Colors.yellow.withOpacity(0.9), BlendMode.dstATop),
-                  image: NetworkImage("https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),//Image.asset('/assets/image_animal.jpg'),
+                  image: const NetworkImage("https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),//Image.asset('/assets/image_animal.jpg'),
                   fit: BoxFit.cover,
                 ),
               )//
@@ -82,9 +107,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 if (!snapshot.hasData) {
                   return Center(
                     child: SizedBox(
-                      child:
-                      new CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation(Colors.blue),
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.blue),
                           strokeWidth: 5.0
                       ),
                       height: 50.0,
@@ -133,7 +157,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 color: Colors.black45,
                             ),
                           ),
-                          calendarStyle: CalendarStyle(
+                          calendarStyle: const CalendarStyle(
                             isTodayHighlighted : true, // today 표시 여부
                             // today 글자 조정
                             todayTextStyle : const TextStyle(
@@ -175,15 +199,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: selectedDay)));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add')));
               },
-              label: Text('일정등록'),
-              icon: Icon(Icons.add),
+              label: const Text('일정등록'),
+              icon: const Icon(Icons.add),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavi(),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
 }
@@ -200,7 +224,8 @@ class Schedule {
   final String date;
   final String memo;
 
-  Schedule({this.id, required this.name, required this.date, required this.memo});
+  Schedule(
+      {this.id, required this.name, required this.date, required this.memo});
 
   factory Schedule.fromMap(Map<String, dynamic> json) => Schedule(
     id: json['id'],
