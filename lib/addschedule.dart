@@ -101,131 +101,139 @@ class _AddScheduleState extends State<AddSchedule> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-    body: Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          Container(
-            height: 60,
-            color: Colors.lightGreen,
-            child: Row(
-              children: [
-                const SizedBox(width: 20,),
-                Expanded(
-                  child: Text(widget.title,
-                      style: const TextStyle(color: Colors.black, fontSize: 20,) ),),
-                Expanded(
-                  flex: 1,
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      color: Colors.black,
-                      onPressed: (){Navigator.of(context).pop();}
-                    ),
-                  )
-                )
-              ]
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Center(
-              child: FutureBuilder<List<Schedule>>(
-                future: DatabaseHelper.instance.getSchedule(_scheduleId),
-                builder: (BuildContext context, AsyncSnapshot<List<Schedule>> snapshot) {
-                  if (snapshot.data!.isEmpty) {
-                    return Column(
-                      children: [
-                        nameInput(),
-                        dateInput(context),
-                        memoInput(),
-                      ],
-                    );
-                  }
-                  else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: snapshot.data!.map((contact) {
-                      if (snapshot.hasData) {
-                        nameController = TextEditingController(text:contact.name);
-                        dateController = TextEditingController(text:contact.date);
-                        if (_selectedDate !=null && _selectedDate !=contact.date){
-                          dateController = TextEditingController(text:_selectedDate);
-                        }
-                        memoController = TextEditingController(text:contact.memo);
-                      }
-                      return Center(
-                          child: Column(
-                            children: [
-                              nameInput(),
-                              dateInput(context),
-                              memoInput(),
-                            ],
-                          )
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-          ),
-          Column(
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
             children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
-            ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      child: const Text('취소'),
-                      onPressed: () {
-                        Navigator.pop(context);
+              Container(
+                height: 60,
+                color: Colors.lightGreen,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 20,),
+                    Expanded(
+                      child: Text(widget.title,
+                          style: const TextStyle(color: Colors.black, fontSize: 20,) ),),
+                    Expanded(
+                      flex: 1,
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.close),
+                          color: Colors.black,
+                          onPressed: (){Navigator.of(context).pop();}
+                        ),
+                      )
+                    )
+                  ]
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: FutureBuilder<List<Schedule>>(
+                    future: DatabaseHelper.instance.getSchedule(_scheduleId),
+                    builder: (BuildContext context, AsyncSnapshot<List<Schedule>> snapshot) {
+                      if (snapshot.data!.isEmpty) {
+                        return Column(
+                          children: [
+                            nameInput(),
+                            dateInput(context),
+                            memoInput(),
+                          ],
+                        );
                       }
+                      else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      }
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: snapshot.data!.map((contact) {
+                          if (snapshot.hasData) {
+                            nameController = TextEditingController(text:contact.name);
+                            dateController = TextEditingController(text:contact.date);
+                            if (_selectedDate !=null && _selectedDate !=contact.date){
+                              dateController = TextEditingController(text:_selectedDate);
+                            }
+                            memoController = TextEditingController(text:contact.memo);
+                          }
+                          return Center(
+                              child: Column(
+                                children: [
+                                  nameInput(),
+                                  dateInput(context),
+                                  memoInput(),
+                                ],
+                              )
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
-                  const SizedBox(width: 10,),
-                  ElevatedButton(
-                    child: const Text('저장'),
-                    onPressed: () {
-                      if(nameController.text.isEmpty){
-                        _showDialog(context, 'Schedule','Name required. \nPlease enter Name.');}
-                      else if(dateController.text.isEmpty){
-                        _showDialog(context, 'Schedule','Date required. \nPlease enter Date.');}
-                      else if(memoController.text.isEmpty){
-                        _showDialog(context, 'Schedule','Memo required. \nPlease enter memo.');}
-                      else {
-                        if (_mode == 'add'){
-                          DatabaseHelper.instance.add(Schedule(
-                              name: nameController.text,
-                              date: dateController.text,
-                              memo: memoController.text),);
-                        } else {
-                          DatabaseHelper.instance.update(Schedule(
-                              id: _scheduleId,
-                              name: nameController.text,
-                              date: dateController.text,
-                              memo: memoController.text),);
-                        }
-                        setState(() {
-                          nameController.clear();
-                          dateController.clear();
-                          memoController.clear();
-                          _scheduleId = null;
-                          _returnUrl(context);});
-                       }
-                     },
+                ),
+              ),
+              Column(
+                children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          child: const Text('취소'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }
+                      ),
+                      const SizedBox(width: 10,),
+                      ElevatedButton(
+                        child: const Text('저장'),
+                        onPressed: () {
+                          if(nameController.text.isEmpty){
+                            _showDialog(context, 'Schedule','Name required. \nPlease enter Name.');}
+                          else if(dateController.text.isEmpty){
+                            _showDialog(context, 'Schedule','Date required. \nPlease enter Date.');}
+                          else if(memoController.text.isEmpty){
+                            _showDialog(context, 'Schedule','Memo required. \nPlease enter memo.');}
+                          else {
+                            if (_mode == 'add'){
+                              DatabaseHelper.instance.add(Schedule(
+                                  name: nameController.text,
+                                  date: dateController.text,
+                                  memo: memoController.text),);
+                            } else {
+                              DatabaseHelper.instance.update(Schedule(
+                                  id: _scheduleId,
+                                  name: nameController.text,
+                                  date: dateController.text,
+                                  memo: memoController.text),);
+                            }
+                            setState(() {
+                              nameController.clear();
+                              dateController.clear();
+                              memoController.clear();
+                              _scheduleId = null;
+                              _returnUrl(context);});
+                           }
+                         },
+                       ),
+                     ],
                    ),
                  ],
-               ),
-             ],
+                ),
+              ],
             ),
-          ],
         ),
-     )
+       )
+      ),
     );//_widgetOptions.elementAt(_selectedIndex);
   }
 

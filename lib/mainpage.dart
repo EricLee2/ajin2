@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:ajin2/addschedule.dart';
 import 'package:ajin2/addS.dart';
 
 class MyStatefulWidget extends StatefulWidget {
@@ -53,33 +52,30 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         elevation: 1,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(
-              //flex: 1,
-              child: Container(
-                width: double.infinity,
-                height: 20,
-                child: Align(
-                  child: Text(getToday()+'\n Welcome to Diary of Ajin.',
-                    style: TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),),
-                  alignment: Alignment.center,
-                ),
-                decoration : BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  //border : Border.all(color : Colors.grey),
-                  image: DecorationImage(
-                    colorFilter: ColorFilter.mode(Colors.yellow.withOpacity(0.9), BlendMode.dstATop),
-                    image: NetworkImage("https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),//Image.asset('/assets/image_animal.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                )//
+            Container(
+              width: double.infinity,
+              height: 100,
+              child: Align(
+                child: Text(getToday()+'\n Welcome to Diary of Ajin.',
+                  style: TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),),
+                alignment: Alignment.center,
               ),
+              decoration : BoxDecoration(
+                shape: BoxShape.rectangle,
+                //border : Border.all(color : Colors.grey),
+                image: DecorationImage(
+                  colorFilter: ColorFilter.mode(Colors.yellow.withOpacity(0.9), BlendMode.dstATop),
+                  image: NetworkImage("https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),//Image.asset('/assets/image_animal.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              )//
             ),
             SizedBox(height: 5.0,),
-            Expanded(
-              flex: 4,
+            Container(
+              width: double.infinity,
               child: FutureBuilder<List<Schedule>>(
               future: DatabaseHelper.instance.getSchedules(),
               builder:(BuildContext context, AsyncSnapshot<List<Schedule>> snapshot) {
@@ -99,76 +95,73 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 return snapshot.data!.isEmpty
                     ? const Center(child: Text('No Schedule in List'))
                     : GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule(title: 'Add Contact', mode: 'add',)));
-                        },
-                      child: TableCalendar(
-                        locale: 'ko_KR',
-                        firstDay:DateTime.utc(2021, 10, 16),
-                        lastDay: DateTime.utc(2030, 3, 14),
-                        focusedDay: focusedDay,
-                        onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
-                          // 선택된 날짜의 상태를 갱신합니다.
-                          setState((){
-                              this.selectedDay = selectedDay;
-                              this.focusedDay = focusedDay;
-                          });
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule(title: 'Add schedule', mode: 'add')));
-                        },
-                        selectedDayPredicate: (DateTime day) {
-                          // selectedDay와 동일한 날짜의 모양을 바꿔줍니다.
-                          return isSameDay(selectedDay, day);
-                        },
-                        headerStyle: HeaderStyle(
-                          titleCentered: true,
-                          titleTextFormatter: (date, locale) =>
-                                DateFormat.yMMMMd(locale).format(date),
-                          formatButtonVisible: false,
-                          titleTextStyle: const TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.blue,
+                        child: TableCalendar(
+                          locale: 'ko_KR',
+                          firstDay:DateTime.utc(2021, 10, 16),
+                          lastDay: DateTime.utc(2030, 3, 14),
+                          focusedDay: focusedDay,
+                          onDaySelected: (DateTime selectedDay, DateTime focusedDay) {
+                            // 선택된 날짜의 상태를 갱신합니다.
+                            setState((){
+                                this.selectedDay = selectedDay;
+                                this.focusedDay = focusedDay;
+                            });
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: selectedDay,)));
+                          },
+                          selectedDayPredicate: (DateTime day) {
+                            // selectedDay와 동일한 날짜의 모양을 바꿔줍니다.
+                            return isSameDay(selectedDay, day);
+                          },
+                          headerStyle: HeaderStyle(
+                            titleCentered: true,
+                            titleTextFormatter: (date, locale) =>
+                                  DateFormat.yMMMMd(locale).format(date),
+                            formatButtonVisible: false,
+                            titleTextStyle: const TextStyle(
+                                fontSize: 20.0,
+                                color: Colors.blue,
+                            ),
+                            headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
+                            leftChevronIcon: const Icon(
+                                Icons.arrow_left,
+                                size: 35.0,
+                                color: Colors.black45,
+                            ),
+                            rightChevronIcon: const Icon(
+                                Icons.arrow_right,
+                                size: 35.0,
+                                color: Colors.black45,
+                            ),
                           ),
-                          headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
-                          leftChevronIcon: const Icon(
-                              Icons.arrow_left,
-                              size: 35.0,
-                              color: Colors.black45,
+                          calendarStyle: CalendarStyle(
+                            isTodayHighlighted : true, // today 표시 여부
+                            // today 글자 조정
+                            todayTextStyle : const TextStyle(
+                                color: Color(0xFFFAFAFA),
+                                fontSize: 16.0,
+                            ),
+                            // today 모양 조정
+                            todayDecoration : const BoxDecoration(
+                                //color: const Color(0xFF9FA8DA),
+                                color: Colors.grey,
+                                shape: BoxShape.circle,
+                            ),
+                            weekendTextStyle : const TextStyle(color: Colors.red),// weekend 글자 조정
+                            //weekendDecoration : const BoxDecoration(shape: BoxShape.circle),// weekend 모양 조정
+                            // selectedDay 글자 조정
+                            selectedTextStyle : const TextStyle(
+                                color: Color(0xFFFAFAFA),
+                                fontSize: 16.0,
+                            ),
+                            // selectedDay 모양 조정
+                            selectedDecoration : const BoxDecoration(
+                                //color: const Color(0xFF5C6BC0),
+                                color: Colors.pink,
+                                shape: BoxShape.circle,
+                            ),
                           ),
-                          rightChevronIcon: const Icon(
-                              Icons.arrow_right,
-                              size: 35.0,
-                              color: Colors.black45,
-                          ),
+                          eventLoader: _getEventsForDay,
                         ),
-                        calendarStyle: CalendarStyle(
-                          isTodayHighlighted : true, // today 표시 여부
-                          // today 글자 조정
-                          todayTextStyle : const TextStyle(
-                              color: Color(0xFFFAFAFA),
-                              fontSize: 16.0,
-                          ),
-                          // today 모양 조정
-                          todayDecoration : const BoxDecoration(
-                              //color: const Color(0xFF9FA8DA),
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                          ),
-                          weekendTextStyle : const TextStyle(color: Colors.red),// weekend 글자 조정
-                          //weekendDecoration : const BoxDecoration(shape: BoxShape.circle),// weekend 모양 조정
-                          // selectedDay 글자 조정
-                          selectedTextStyle : const TextStyle(
-                              color: Color(0xFFFAFAFA),
-                              fontSize: 16.0,
-                          ),
-                          // selectedDay 모양 조정
-                          selectedDecoration : const BoxDecoration(
-                              //color: const Color(0xFF5C6BC0),
-                              color: Colors.pink,
-                              shape: BoxShape.circle,
-                          ),
-                        ),
-                        eventLoader: _getEventsForDay,
-                      ),
                     );
               }
             ),
@@ -182,7 +175,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add')));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: selectedDay)));
               },
               label: Text('일정등록'),
               icon: Icon(Icons.add),

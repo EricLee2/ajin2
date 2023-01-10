@@ -8,10 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 
 class AddSchedule1 extends StatefulWidget {
-  const AddSchedule1({Key? key, required this.title, this.mode, this.scheduleId}) : super(key: key);
+  const AddSchedule1({Key? key, required this.title, this.mode, this.scheduleId, this.memoD}) : super(key: key);
   final String title ;
   final String? mode;
   final int? scheduleId;
+  final DateTime? memoD;
 
   @override
   State<AddSchedule1> createState() => _AddSchedule1State();
@@ -22,6 +23,7 @@ class _AddSchedule1State extends State<AddSchedule1> {
   String date = "";
   String memo = "";
   DateTime? _selectedDate;
+  String temp = "";
 
   final _formKey = GlobalKey<FormState>();
 
@@ -32,16 +34,87 @@ class _AddSchedule1State extends State<AddSchedule1> {
   TextEditingController dateController = TextEditingController();
   TextEditingController memoController = TextEditingController();
 
+/*  final Size size = MediaQuery.of(context).size;
+  Positioned(
+    height: size.height * 0.1;
+    width: size.width * 0.8;
+  )*/
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    if(widget.mode == 'add'){
+      temp = DateFormat('yyyy-MM-dd').format(widget.memoD!);
+      dateController = TextEditingController(text:temp);
+    }
+
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: [
         SystemUiOverlay.bottom, //하단바만 보이기
         //SystemUiOverlay.top, //상단바만 보이기
       ],
+    );
+  }
+  void _showDialog(BuildContext context){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          color: Colors.transparent,
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Align(
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: Image(
+                      image: AssetImage('assets/close_bt.png'),
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  alignment: Alignment.bottomLeft,
+                ),
+              ),
+              Expanded(
+                child: AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0)
+                  ),
+                  content:Container(
+                    padding: const EdgeInsets.all(0),
+                    width:  MediaQuery.of(context).size.height * 0.9,
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Align(
+                      child: Text('Welcome to Diary of Ajin.', style: TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),),
+                      alignment: Alignment.center,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      image: DecorationImage(
+                        colorFilter: ColorFilter.mode(Colors.yellow.withOpacity(0.9), BlendMode.dstATop),
+                        image: NetworkImage("https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),//Image.asset('/assets/image_animal.jpg'),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
     );
   }
 
@@ -80,7 +153,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       ),
     );
   }
-
   Widget HomePageBody(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -121,6 +193,8 @@ class _AddSchedule1State extends State<AddSchedule1> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        ShowButton(context),
+                        SizedBox(width: 10,),
                         CancelButton(context),
                         SizedBox(width: 10,),
                         ResetButton(context),
@@ -137,7 +211,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       ),
     );
   }
-
   Widget NameInput() {
     return TextFormField(
       controller: nameController,
@@ -159,7 +232,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       onSaved: (value) => name = value as String,
     );
   }
-
   Widget DateInput(BuildContext context) {
     return TextFormField(
       controller: dateController,
@@ -185,7 +257,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       onSaved: (value) => date = value as String,
     );
   }
-
   Widget MemoInput() {
     return TextFormField(
       controller: memoController,
@@ -194,7 +265,7 @@ class _AddSchedule1State extends State<AddSchedule1> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       minLines: 1,
       maxLines: 5,
- //     initialValue : _initialDate,
+      //     initialValue : _initialDate,
       //     obscureText: true,
       decoration: InputDecoration(
         labelText: "일정",
@@ -210,7 +281,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       onSaved: (value) => memo = value as String,
     );
   }
-
   ElevatedButton SubmitButton(BuildContext context) {
     return ElevatedButton(
       onPressed: (){
@@ -233,7 +303,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       child: Text("Submit", style: TextStyle(color: Colors.white),),
     );
   }
-
   ElevatedButton CancelButton(BuildContext context) {
     return ElevatedButton(
       onPressed: (){
@@ -242,7 +311,6 @@ class _AddSchedule1State extends State<AddSchedule1> {
       child: Text("Cancel", style: TextStyle(color: Colors.white),),
     );
   }
-
   ElevatedButton ResetButton(BuildContext context) {
     return ElevatedButton(
       onPressed: (){
@@ -253,12 +321,18 @@ class _AddSchedule1State extends State<AddSchedule1> {
       child: Text("Reset", style: TextStyle(color: Colors.white),),
     );
   }
+  ElevatedButton ShowButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: (){
+        _showDialog(context);
+      },
+      child: Text("Dialog", style: TextStyle(color: Colors.white),),
+    );
+  }
 }
-
 _returnUrl(BuildContext context) {
   Navigator.pushNamedAndRemoveUntil(context, '/schedule', (route) => false);
 }
-
 class Schedule {
   final int? id;
   final String name;
@@ -283,8 +357,6 @@ class Schedule {
     };
   }
 }
-
-
 class DatabaseHelper {
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();

@@ -80,113 +80,118 @@ class _AddContactState extends State<AddContact> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        elevation: 1,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Center(
-              child: FutureBuilder<List<Contact>>(
-                future: DatabaseHelper.instance.getContact(_contactId),
-                builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
-                  if (snapshot.data!.isEmpty) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          elevation: 1,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Center(
+                child: FutureBuilder<List<Contact>>(
+                  future: DatabaseHelper.instance.getContact(_contactId),
+                  builder: (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
+                    if (snapshot.data!.isEmpty) {
+                      return Column(
+                        children: [
+                          nameInput(),
+                          mobileInput(),
+                          emailInput(),
+                        ],
+                      );
+                    }
+                    else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
                     return Column(
-                      children: [
-                        nameInput(),
-                        mobileInput(),
-                        emailInput(),
-                      ],
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: snapshot.data!.map((contact) {
+                          if (snapshot.hasData) {
+                            nameController = TextEditingController(text:contact.name);
+                            mobileController = TextEditingController(text:contact.mobile);
+                            emailController = TextEditingController(text:contact.email);
+                          }
+                          return Center(child:
+                            Column(
+                              children: [
+                                nameInput(),
+                                mobileInput(),
+                                emailInput(),
+                              ],
+                            )
+                          );
+                        }).toList(),
                     );
-                  }
-                  else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: snapshot.data!.map((contact) {
-                        if (snapshot.hasData) {
-                          nameController = TextEditingController(text:contact.name);
-                          mobileController = TextEditingController(text:contact.mobile);
-                          emailController = TextEditingController(text:contact.email);
-                        }
-                        return Center(child:
-                          Column(
-                            children: [
-                              nameInput(),
-                              mobileInput(),
-                              emailInput(),
-                            ],
-                          )
-                        );
-                      }).toList(),
-                  );
-                },
-              ),
-            ),
-            Center(
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.0),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                            child: const Text('취소'),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            }
-                        ),
-                        const SizedBox(width: 10,),
-                        ElevatedButton(
-                          child: const Text('저장'),
-                          onPressed: () {
-                            String pattern =
-                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                            RegExp regExp = RegExp(pattern);
-                            if(nameController.value.text.isEmpty){
-                              _showDialog(context, 'Contact','Name required. \nPlease enter Name.');}
-                            else if(mobileController.value.text.isEmpty){
-                              _showDialog(context, 'Contact','Mobile required. \nPlease enter Mobile.');}
-                            else if(!RegExp(r"^[0-9]*$").hasMatch(mobileController.value.text)){
-                              _showDialog(context, 'Contact','Wrong Mobile. \nPlease check Mobile.');}
-                            else if(emailController.value.text.isEmpty){
-                              _showDialog(context, 'Contact','Email required. \nPlease enter Email.');}
-                            else if(!regExp.hasMatch(emailController.value.text)){
-                              _showDialog(context, 'Contact','Wrong Email. \nPlease check Email.');}
-                            else {
-                              if (_mode == 'add'){
-                                DatabaseHelper.instance.add(Contact(
-                                    name: nameController.text,
-                                    mobile: mobileController.text,
-                                    email: emailController.text),);
-                              } else {
-                                DatabaseHelper.instance.update(Contact(
-                                    id: _contactId,
-                                    name: nameController.text,
-                                    mobile: mobileController.text,
-                                    email: emailController.text),);
-                              }
-                              setState(() {
-                                nameController.clear();
-                                mobileController.clear();
-                                emailController.clear();
-                                _contactId = null;
-                                _returnUrl(context);});
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                  },
                 ),
               ),
-          ],
+              Center(
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                              child: const Text('취소'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }
+                          ),
+                          const SizedBox(width: 10,),
+                          ElevatedButton(
+                            child: const Text('저장'),
+                            onPressed: () {
+                              String pattern =
+                                  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                              RegExp regExp = RegExp(pattern);
+                              if(nameController.value.text.isEmpty){
+                                _showDialog(context, 'Contact','Name required. \nPlease enter Name.');}
+                              else if(mobileController.value.text.isEmpty){
+                                _showDialog(context, 'Contact','Mobile required. \nPlease enter Mobile.');}
+                              else if(!RegExp(r"^[0-9]*$").hasMatch(mobileController.value.text)){
+                                _showDialog(context, 'Contact','Wrong Mobile. \nPlease check Mobile.');}
+                              else if(emailController.value.text.isEmpty){
+                                _showDialog(context, 'Contact','Email required. \nPlease enter Email.');}
+                              else if(!regExp.hasMatch(emailController.value.text)){
+                                _showDialog(context, 'Contact','Wrong Email. \nPlease check Email.');}
+                              else {
+                                if (_mode == 'add'){
+                                  DatabaseHelper.instance.add(Contact(
+                                      name: nameController.text,
+                                      mobile: mobileController.text,
+                                      email: emailController.text),);
+                                } else {
+                                  DatabaseHelper.instance.update(Contact(
+                                      id: _contactId,
+                                      name: nameController.text,
+                                      mobile: mobileController.text,
+                                      email: emailController.text),);
+                                }
+                                setState(() {
+                                  nameController.clear();
+                                  mobileController.clear();
+                                  emailController.clear();
+                                  _contactId = null;
+                                  _returnUrl(context);});
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
