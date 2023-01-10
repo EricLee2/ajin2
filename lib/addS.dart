@@ -12,7 +12,7 @@ class AddSchedule1 extends StatefulWidget {
   final String title ;
   final String? mode;
   final int? scheduleId;
-  final DateTime? memoD;
+  final String? memoD;
 
   @override
   State<AddSchedule1> createState() => _AddSchedule1State();
@@ -34,20 +34,14 @@ class _AddSchedule1State extends State<AddSchedule1> {
   TextEditingController dateController = TextEditingController();
   TextEditingController memoController = TextEditingController();
 
-/*  final Size size = MediaQuery.of(context).size;
-  Positioned(
-    height: size.height * 0.1;
-    width: size.width * 0.8;
-  )*/
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    if(widget.mode == 'add'){
-      temp = DateFormat('yyyy-MM-dd').format(widget.memoD!);
-      dateController = TextEditingController(text:temp);
+    temp = widget.memoD!;
+    if(widget.mode == 'add' && temp.isNotEmpty){
+      //temp = DateFormat('yyyy-MM-dd').format(widget.memoD!);
+      dateController = TextEditingController(text: temp.substring(0, 10));
     }
 
     SystemChrome.setEnabledSystemUIMode(
@@ -71,7 +65,7 @@ class _AddSchedule1State extends State<AddSchedule1> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                padding: const EdgeInsets.fromLTRB(15, 15, 10, 10),
                 child: Align(
                   child: GestureDetector(
                     onTap: (){

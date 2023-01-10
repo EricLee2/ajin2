@@ -28,9 +28,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   DateTime focusedDay = DateTime.now();
 
-  Map<DateTime, List<Event>> events = {
+  Map events = Map<DateTime, List<Event>>();
+  /*  Map<DateTime, List<Event>> events = {
     DateTime.utc(2023, 1, 4): [Event('title3')],
-  };
+  };*/
 
   List<Event> _getEventsForDay(DateTime day) {
     bool? y = events[day]?.isEmpty;
@@ -48,21 +49,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 
   changeScheduleToEvents(AsyncSnapshot<List<Schedule>> snapshot) {
-/*    if (!snapshot.hasData) {
-      return;
-    } else {*/
-      /*
-        snapshot.data 배열의 data값을 대상으로 events가 키를 가지고 있는지 확인
-      */
-      List<Schedule>? messages = snapshot.data;
-      messages?.forEach((el) {
-        String fromDate = el.date;
-        DateTime dt = DateTime.parse(fromDate).toUtc().add(Duration(hours:9));
-        Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
-        events.addAll(oneEvent);
-      });
-      print(events);
- //   }
+    List<Schedule>? messages = snapshot.data;
+    messages?.forEach((el) {
+      String fromDate = el.date;
+      DateTime dt = DateTime.parse(fromDate).toUtc().add(const Duration(hours:9));
+
+      Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
+      events.addAll(oneEvent);
+    });
   }
 
   @override
@@ -127,7 +121,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 this.selectedDay = selectedDay;
                                 this.focusedDay = focusedDay;
                             });
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: selectedDay,)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: selectedDay.toString(),)));
                           },
                           selectedDayPredicate: (DateTime day) {
                             // selectedDay와 동일한 날짜의 모양을 바꿔줍니다.
@@ -196,7 +190,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton.extended(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add')));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AddSchedule1(title: 'Add schedule', mode: 'add', memoD: '',)));
               },
               label: const Text('일정등록'),
               icon: const Icon(Icons.add),
