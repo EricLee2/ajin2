@@ -57,8 +57,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       List<Schedule>? messages = snapshot.data;
       messages?.forEach((el) {
         String fromDate = el.date;
-        DateTime dt = DateTime.parse(fromDate).toUtc();
-
+        DateTime dt = DateTime.parse(fromDate).toUtc().add(Duration(hours:9));
         Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
         events.addAll(oneEvent);
       });
