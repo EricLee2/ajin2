@@ -64,7 +64,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: Align(
                     child: Text(
                       getToday() + '\n Welcome to Diary of Ajin.',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.green,
                           fontSize: 20,
                           fontWeight: FontWeight.bold),
@@ -77,7 +77,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     image: DecorationImage(
                       colorFilter: ColorFilter.mode(
                           Colors.yellow.withOpacity(0.9), BlendMode.dstATop),
-                      image: NetworkImage(
+                      image: const NetworkImage(
                           "https://mblogthumb-phinf.pstatic.net/20160411_195/fotolia_korea_1460366094204KtUfl_JPEG/%BA%BD%B2%C9%C0%CC%B9%CC%C1%F6_1.jpg?type=w800"),
                       //Image.asset('/assets/image_animal.jpg'),
                       fit: BoxFit.cover,
@@ -85,7 +85,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   ) //
                   ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5.0,
             ),
             Expanded(
@@ -95,11 +95,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Schedule>> snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(
+                      return const Center(
                         child: SizedBox(
-                            child: new CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                                 valueColor:
-                                    new AlwaysStoppedAnimation(Colors.blue),
+                                    AlwaysStoppedAnimation(Colors.blue),
                                 strokeWidth: 5.0),
                             height: 50.0,
                             width: 50.0),
@@ -112,7 +112,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => AddSchedule(
+                                      builder: (context) => const AddSchedule(
                                             title: 'Add Contact',
                                             mode: 'add',
                                           )));
@@ -132,7 +132,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => AddSchedule(
+                                      builder: (context) => const AddSchedule(
                                           title: 'Add schedule',
                                           mode: 'add')));
                               },
@@ -160,31 +160,31 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                   color: Colors.black45,
                                 ),
                               ),
-                              calendarStyle: CalendarStyle(
+                              calendarStyle: const CalendarStyle(
                                 isTodayHighlighted: true,
                                 // today 표시 여부
                                 // today 글자 조정
-                                todayTextStyle: const TextStyle(
+                                todayTextStyle: TextStyle(
                                   color: Color(0xFFFAFAFA),
                                   fontSize: 16.0,
                                 ),
                                 // today 모양 조정
-                                todayDecoration: const BoxDecoration(
+                                todayDecoration: BoxDecoration(
                                   //color: const Color(0xFF9FA8DA),
                                   color: Colors.grey,
                                   shape: BoxShape.circle,
                                 ),
                                 weekendTextStyle:
-                                    const TextStyle(color: Colors.red),
+                                    TextStyle(color: Colors.red),
                                 // weekend 글자 조정
                                 //weekendDecoration : const BoxDecoration(shape: BoxShape.circle),// weekend 모양 조정
                                 // selectedDay 글자 조정
-                                selectedTextStyle: const TextStyle(
+                                selectedTextStyle: TextStyle(
                                   color: Color(0xFFFAFAFA),
                                   fontSize: 16.0,
                                 ),
                                 // selectedDay 모양 조정
-                                selectedDecoration: const BoxDecoration(
+                                selectedDecoration: BoxDecoration(
                                   //color: const Color(0xFF5C6BC0),
                                   color: Colors.pink,
                                   shape: BoxShape.circle,
@@ -208,15 +208,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            AddSchedule1(title: 'Add schedule', mode: 'add')));
+                            const AddSchedule1(title: 'Add schedule', mode: 'add')));
               },
-              label: Text('일정등록'),
-              icon: Icon(Icons.add),
+              label: const Text('일정등록'),
+              icon: const Icon(Icons.add),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavi(),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
 }
