@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:ajin2/bottomnavigationbar.dart';
 import 'package:intl/intl.dart';
@@ -30,11 +32,17 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   DateTime focusedDay = DateTime.now();
 
   Map<DateTime, List<Event>> events = {
+    DateTime.utc(2023, 1, 4): [Event('title4'), Event('title5')],
     DateTime.utc(2023, 1, 6): [Event('title'), Event('title2')],
-    DateTime.utc(2023, 1, 14): [Event('title3')],
+    /*DateTime.utc(2023, 1, 14): [Event('title3')],*/
   };
 
   List<Event> _getEventsForDay(DateTime day) {
+    bool? y = events[day]?.isEmpty;
+    print(events);
+    if ( y != null ) {
+      int x = 1;
+    }
     return events[day] ?? [];
   }
 
@@ -43,6 +51,24 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     strToday = formatter.format(now);
     return strToday;
+  }
+
+  changeScheduleToEvents(AsyncSnapshot<List<Schedule>> snapshot) {
+    if (!snapshot.hasData) {
+      return;
+    } else {
+      /*
+        snapshot.data 배열의 data값을 대상으로 events가 키를 가지고 있는지 확인
+      */
+      List<Schedule>? messages = snapshot.data;
+      messages?.forEach((el) {
+        String fromDate = el.date;
+        DateTime dt = DateTime.parse(fromDate).toUtc();
+
+        Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
+        events.addAll(oneEvent);
+      });
+    }
   }
 
   @override
@@ -104,6 +130,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                             height: 50.0,
                             width: 50.0),
                       );
+                    } else {
+                      changeScheduleToEvents(snapshot);
                     }
                     return snapshot.data!.isEmpty
                         ? const Center(child: Text('No Schedule in List'))
@@ -116,6 +144,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                             title: 'Add Contact',
                                             mode: 'add',
                                           )));
+                              changeScheduleToEvents(snapshot);
                             },
                             child: TableCalendar(
                               locale: 'ko_KR',
