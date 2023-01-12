@@ -54,8 +54,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       String fromDate = el.date;
       DateTime dt = DateTime.parse(fromDate).toUtc().add(const Duration(hours:9));
 
-      Map<DateTime, List<Event>> oneEvent = { dt : [Event(el.name)] };
-      events.addAll(oneEvent);
+      if ( events[dt] != null ) { // 키값 날짜로 검색해서 값이 있는 경우, 존재하는 키값 - value값 배열의 뒤에 추가
+        List<Event>? event = events[dt]; // 날짜를 사용하여 이벤트 목록(배열)을 가져옴
+        event?.add(Event(el.name));
+      } else {  // 이벤트 목록에 없는 날짜라면 이벤트를 생성하여 넣는다
+        Map<DateTime, List<Event>> oneEvent = { dt: [Event(el.name)]};
+        events.addAll(oneEvent);
+      }
     });
   }
 
@@ -264,7 +269,7 @@ class DatabaseHelper {
 
   Future<List<Schedule>> getSchedules() async {
     Database db = await instance.database;
-    var schedule = await db.query('schedules', groupBy: 'date');
+    var schedule = await db.query('schedules', orderBy: 'date');
 //    var schedule = await db.execute("select date, LISTAGG(name,',') WITHIN GROUP(ORDER BY date) AS name FORM schedules GROUB BY date");
     List<Schedule> scheduleList = schedule.isNotEmpty
         ? schedule.map((c) => Schedule.fromMap(c)).toList()
