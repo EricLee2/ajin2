@@ -51,7 +51,7 @@ class _AddSchedule1State extends State<AddSchedule1> {
         //SystemUiOverlay.top, //상단바만 보이기
       ],
     );
-  }rrrr
+  }
   void _showDialog(BuildContext context){
     showDialog(
       context: context,
