@@ -44,62 +44,79 @@ class _MyContactState extends State<MyContact> {
               );
             }
             return snapshot.data!.isEmpty
-                ? Center(child: Text('No Groceries in List'))
+                ? Center(child: Text('No Contacts in List'))
                 : ListView(
               children: snapshot.data!.map((contact) {
                 return Center(
-                  child: Card(
-                    elevation: 1,
+                  child: Dismissible(
+                    onDismissed: (direction) {
+                      setState(() {
+                        if(direction== DismissDirection.endToStart){
+                          DatabaseHelper.instance.remove(contact.id!);
+                        }
+                      });
+                    },
+                    direction: DismissDirection.endToStart,
+                    //key: ValueKey(contact.id),
+                    key: UniqueKey(),
+                    background: Container(
+                      color: Colors.grey[100],
+                      alignment: Alignment.center,
+                      child: Text('삭제중입니다.'),
+                    ),
+                    child: Card(
+                      elevation: 1,
 /*                    color: selectedId == contact.id
-                        ? Colors.white70
-                        : Colors.white,*/
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddContact(title: 'Update Contact', mode: 'update', contactId: contact.id)));
-                      },
-                      title: Container(
-                        padding: const EdgeInsets.fromLTRB(0,10,0,10),
-                        height: 100,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 12,
-                              child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.person),
-                                    SizedBox(width: 10,),
-                                    Text(contact.name),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.phone),
-                                    SizedBox(width: 10,),
-                                    Text(contact.mobile),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.local_post_office),
-                                    SizedBox(width: 10,),
-                                    Text(contact.email),
-                                  ],
-                                ),
-                              ],
-                            ),),
-                            Expanded(child: IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () {
-                                setState(() {
-                                  DatabaseHelper.instance.remove(contact.id!);
-                                });
-                              },
-                            ),)
-                          ],
+                          ? Colors.white70
+                          : Colors.white,*/
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddContact(title: 'Update Contact', mode: 'update', contactId: contact.id)));
+                        },
+                        title: Container(
+                          padding: const EdgeInsets.fromLTRB(0,10,0,10),
+                          height: 100,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 12,
+                                child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.person),
+                                      SizedBox(width: 10,),
+                                      Text(contact.name),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.phone),
+                                      SizedBox(width: 10,),
+                                      Text(contact.mobile),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.local_post_office),
+                                      SizedBox(width: 10,),
+                                      Text(contact.email),
+                                    ],
+                                  ),
+                                ],
+                              ),),
+                              Expanded(child: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  setState(() {
+                                    DatabaseHelper.instance.remove(contact.id!);
+                                  });
+                                },
+                              ),)
+                            ],
+                          ),
                         ),
                       ),
                     ),

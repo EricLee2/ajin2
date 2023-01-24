@@ -32,7 +32,7 @@ class _BottomNaviState extends State<BottomNavi> {
       _selectedIndex = index;
     });
 
-    //print(_selectedIndex);
+    print(_selectedIndex);
 
     String routeName='';
     if (index == 0){routeName ='/';}
@@ -47,24 +47,26 @@ class _BottomNaviState extends State<BottomNavi> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.contact_phone),
-            label: 'Contact',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        //currentIndex: _currentIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped
+      backgroundColor: Colors.blue,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.schedule),
+          label: 'Schedule',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.contact_phone),
+          label: 'Contact',
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      //currentIndex: _currentIndex,
+      selectedItemColor: Colors.amber[800],
+      unselectedItemColor: Colors.white,
+      onTap: _onItemTapped,
     );
   }
 }

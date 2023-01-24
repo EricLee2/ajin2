@@ -1,3 +1,4 @@
+import 'package:ajin2/ui/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:ajin2/bottomnavigationbar.dart';
 import 'package:intl/intl.dart';
@@ -67,98 +68,82 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        elevation: 1,
-      ),
-      drawer: Drawer(
-        backgroundColor: Colors.white,
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text("Ajin's Diary"),
-              accountEmail: Text('ajin@test.com'),
-              onDetailsPressed: (){},
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('/assets/image_animal.jpg'),
-                //backgroundColor: Colors.transparent,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.amber[600],
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20)
-                ),
-              ),
-              otherAccountsPictures: [CircleAvatar(
-                backgroundImage: AssetImage('/assets/image_animal.jpg'),
-                //backgroundColor: Colors.transparent,
-                ),
-              ],
+      resizeToAvoidBottomInset: false,
+      appBar: PreferredSize( // AppBar 높이 조절하고 싶을 때
+        preferredSize: const Size.fromHeight(55.0),
+        child: AppBar(
+          //backgroundColor : Colors.green,
+          title: Text(widget.title),
+          /*bottom: PreferredSize(
+            child: Text('Appbar Bottom'), preferredSize: Size(10, 10),
+          ),*/
+          actions: [
+            IconButton(
+              icon: Icon(Icons.login),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
             ),
-/*              Container(
-                height: 50,
-                padding: EdgeInsets.only(right: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('Login'),
-                    SizedBox(width:5),
-                    IconButton(onPressed: null, icon: Icon(Icons.login)),
-                  ],
-                ),
-              ),*/
-            ListTile(
-              leading: Icon(Icons.schedule, color: Colors.grey),
-              title: Text('Schedule'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/schedule');
-              },
-              trailing: Icon(Icons.add),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Divider(thickness: 1, height: 1, color: Colors.grey),
-            ),
-            ListTile(
-              leading: Icon(Icons.contact_phone, color: Colors.grey),
-              title: Text('Contact'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/contact');
-              },
-              trailing: Icon(Icons.add),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Divider(thickness: 1, height: 1, color: Colors.grey),
-            ),
-            ListTile(
-              leading: Icon(Icons.contact_phone, color: Colors.grey),
-              title: Text('Arcodion Page'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/arcodion');
-              },
-              trailing: Icon(Icons.add),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Divider(thickness: 1, height: 1, color: Colors.grey),
-            ),
-            ListTile(
-              leading: Icon(Icons.contact_phone, color: Colors.grey),
-              title: Text('Accorodion 예제2'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/xxx');
-              },
-              trailing: Icon(Icons.add),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: Divider(thickness: 1, height: 1, color: Colors.grey),
-            ),
+            IconButton(
+              icon: Icon(Icons.add_alert),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: 300,
+                      decoration: const BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(10,10,10,10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              height: 40,
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text('Modal BottomSheet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black45),),
+                                  IconButton(
+                                    icon: const Icon(Icons.close_rounded, size: 20,),
+                                    onPressed: (){Navigator.of(context).pop();},)
+                                ],
+                              ),
+                            ),
+                            Divider(thickness: 1, height: 1, color: Colors.grey[500],),
+                            const Expanded(
+                              flex: 1,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text('Text')
+                              ),
+                            ),
+                            ElevatedButton(
+                              child: const Text('Done!'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+
+              }, )
           ],
+          elevation: 1,
         ),
       ),
+      drawer: ShowDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -201,7 +186,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   );
                 } else {changeScheduleToEvents(snapshot);}
                 return snapshot.data!.isEmpty
-                    ? const Center(child: Text('No Schedule in List'))
+                    ? Center(
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 400,
+                          child: Text('No Schedule in List', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),)
+                        )
+                      )
                     : GestureDetector(
                         child: TableCalendar(
                           locale: 'ko_KR',

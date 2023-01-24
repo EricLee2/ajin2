@@ -25,10 +25,9 @@ class _TopCategoryState extends State<TopCategory> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      collapsedBackgroundColor: Colors.teal,
-      backgroundColor: Colors.white,
+      collapsedBackgroundColor: Colors.white,
+      backgroundColor: Colors.amber,
       title: Container(
-          color: Colors.yellow,
           height: 130,
           width: MediaQuery.of(context).size.width,
           child: Row(
@@ -42,14 +41,14 @@ class _TopCategoryState extends State<TopCategory> {
                   children: [
                     Row(
                       children: [
-                        Text(widget.firstCtg, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text(widget.firstCtg, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                         Icon(_customTileExpanded
                             ? Icons.arrow_drop_up
                             : Icons.arrow_drop_down
                           , size: 35,),
                       ],
                     ),
-                    Text('Index is ${widget.index}', style: TextStyle(fontSize: 15, overflow: TextOverflow.ellipsis),),
+                    Text('Index is ${widget.index}', style: const TextStyle(fontSize: 15, overflow: TextOverflow.ellipsis),),
                   ],
                 ),
               ),
@@ -57,15 +56,9 @@ class _TopCategoryState extends State<TopCategory> {
               Image.asset('assets/image_animal.jpg', ),
             ],
           )),
-      trailing: SizedBox.shrink(), // tailing을 표시하고 싶지 않은 경우
+      trailing: const SizedBox.shrink(), // tailing을 표시하고 싶지 않은 경우
       children: [
         SubCategory(secondCtg:widget.index),
- //       ListView.builder(
- //         itemBuilder: (BuildContext context, int index) {
- //           return SubCategory(secondCtg:widget.index);
- //         },
- //         itemCount: data.length,
- //       ),
       ],
       onExpansionChanged: (bool expanded) {
         setState(() => _customTileExpanded = expanded );
